@@ -9,7 +9,7 @@
         :root {
             --cor-fundo: #0a0a0a;
             --cor-card: #141414;
-            --cor-primaria: #ff4d00; /* Laranja de alta performance */
+            --cor-primaria: #ff4d00;
             --cor-texto: #ffffff;
             --cor-suave: #a0a0a0;
         }
@@ -29,7 +29,6 @@
             height: 100vh;
         }
 
-        /* CABEÇALHO IDÊNTICO À LANDING PAGE */
         .barra-navegacao {
             display: flex;
             justify-content: space-between;
@@ -59,11 +58,6 @@
             color: white;
             text-decoration: none;
             font-weight: 500;
-            transition: 0.3s;
-        }
-
-        nav ul li a:hover {
-            color: var(--cor-primaria);
         }
 
         .botao-menu {
@@ -74,7 +68,6 @@
             font-weight: bold;
         }
 
-        /* ÁREA DO CHAT */
         .chat-container {
             flex: 1;
             display: flex;
@@ -86,7 +79,6 @@
             border-radius: 10px;
             overflow: hidden;
             border: 1px solid #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .chat-header {
@@ -96,15 +88,8 @@
             border-bottom: 1px solid #333;
         }
 
-        .chat-header h2 {
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .chat-header span {
-            color: var(--cor-primaria);
-        }
+        .chat-header h2 { font-size: 1.2rem; text-transform: uppercase; }
+        .chat-header span { color: var(--cor-primaria); }
 
         #chat-messages {
             flex: 1;
@@ -115,13 +100,13 @@
             gap: 15px;
         }
 
-        /* BALÕES DE MENSAGEM */
         .mensagem {
             max-width: 80%;
             padding: 12px 18px;
             border-radius: 15px;
             line-height: 1.5;
             font-size: 15px;
+            position: relative;
         }
 
         .user-message {
@@ -140,7 +125,35 @@
             border: 1px solid #444;
         }
 
-        /* CAMPO DE ENTRADA */
+        /* ANIMAÇÃO DE DIGITANDO */
+        .typing {
+            display: none; /* Escondido por padrão */
+            align-self: flex-start;
+            background: #252525;
+            padding: 15px;
+            border-radius: 15px;
+            border-bottom-left-radius: 2px;
+            border: 1px solid #444;
+        }
+
+        .dot {
+            height: 8px;
+            width: 8px;
+            background-color: var(--cor-primaria);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 3px;
+            animation: bounce 1.3s linear infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: -1.1s; }
+        .dot:nth-child(3) { animation-delay: -0.9s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-7px); }
+        }
+
         .chat-input-area {
             padding: 20px;
             background: #1a1a1a;
@@ -158,10 +171,6 @@
             outline: none;
         }
 
-        input[type="text"]:focus {
-            border-color: var(--cor-primaria);
-        }
-
         button#btn-enviar {
             background: var(--cor-primaria);
             color: black;
@@ -170,15 +179,8 @@
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
         }
 
-        button#btn-enviar:hover {
-            background: #ff6a2a;
-            transform: scale(1.05);
-        }
-
-        /* RODAPÉ */
         footer {
             text-align: center;
             padding: 15px;
@@ -186,10 +188,6 @@
             color: var(--cor-suave);
             background: black;
         }
-
-        /* SCROLLBAR PERSONALIZADA */
-        #chat-messages::-webkit-scrollbar { width: 6px; }
-        #chat-messages::-webkit-scrollbar-thumb { background: var(--cor-primaria); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -209,17 +207,21 @@
     <main class="chat-container">
         <div class="chat-header">
             <h2>MyCoach <span>Legacy</span> IA</h2>
-            <p style="font-size: 12px; color: #888;">Forge seu shape com inteligência</p>
         </div>
 
         <div id="chat-messages">
             <div class="mensagem bot-message">
-                Bem-vindo à Nexus Legacy. Eu sou seu MyCoach. Como posso ajudar no seu treinamento hoje?
+                Pronto para forjar sua melhor versão? Como posso ajudar hoje?
+            </div>
+            <div id="typing-indicator" class="typing">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
             </div>
         </div>
 
         <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Pergunte sobre treinos, dieta ou mentalidade...">
+            <input type="text" id="user-input" placeholder="Pergunte sobre treinos ou dieta...">
             <button id="btn-enviar">FORJAR</button>
         </div>
     </main>
@@ -232,14 +234,19 @@
         const input = document.getElementById('user-input');
         const btn = document.getElementById('btn-enviar');
         const chatMessages = document.getElementById('chat-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
 
         async function enviarMensagem() {
             const mensagem = input.value.trim();
             if (!mensagem) return;
 
-            // Adicionar mensagem do usuário na tela
             adicionarMensagem(mensagem, 'user-message');
             input.value = '';
+
+            // Mostrar indicador de digitação e mover para o final
+            typingIndicator.style.display = 'block';
+            chatMessages.appendChild(typingIndicator); 
+            chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
                 const response = await fetch('/perguntar', {
@@ -249,9 +256,12 @@
                 });
 
                 const dados = await response.json();
+                
+                typingIndicator.style.display = 'none'; // Esconde indicador
                 adicionarMensagem(dados.resposta, 'bot-message');
             } catch (error) {
-                adicionarMensagem("Erro ao conectar com a NexusIA.", 'bot-message');
+                typingIndicator.style.display = 'none';
+                adicionarMensagem("Erro técnico na NexusIA.", 'bot-message');
             }
         }
 
@@ -259,14 +269,13 @@
             const div = document.createElement('div');
             div.className = `mensagem ${classe}`;
             div.innerText = texto;
-            chatMessages.appendChild(div);
+            // Insere antes do indicador para ele sempre ficar por último enquanto ativo
+            chatMessages.insertBefore(div, typingIndicator);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         btn.addEventListener('click', enviarMensagem);
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') enviarMensagem();
-        });
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarMensagem(); });
     </script>
 </body>
 </html>
