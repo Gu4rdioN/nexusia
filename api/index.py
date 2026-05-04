@@ -39,7 +39,7 @@ def perguntar():
         pergunta = dados.get('mensagem')
 
         response = client.chat.completions.create(
-            model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", 
+            model="nousresearch/hermes-3-llama-3.1-405b:free", 
             messages=[
                 {"role": "system", "content": IDENTIDADE_HYDRALYNX},
                 {"role": "user", "content": pergunta}
