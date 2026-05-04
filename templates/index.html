@@ -1,13 +1,272 @@
 <!DOCTYPE html>
-
+<html lang="pt-br">
 <head>
-<body>
-<div id="chat-container">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyCoach | Nexus Legacy</title>
+    <style>
+        /* CONFIGURAÇÕES GERAIS - ESTILO NEXUS LEGACY */
+        :root {
+            --cor-fundo: #0a0a0a;
+            --cor-card: #141414;
+            --cor-primaria: #ff4d00; /* Laranja de alta performance */
+            --cor-texto: #ffffff;
+            --cor-suave: #a0a0a0;
+        }
 
-    <div id="historico"></div> <input type="text" id="mensagem-usuario" placeholder="Digite sua pergunta...">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    <button onclick="enviarPergunta()">Enviar</button>
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-</div>
-</body>
+        /* CABEÇALHO IDÊNTICO À LANDING PAGE */
+        .barra-navegacao {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 2px solid var(--cor-primaria);
+        }
+
+        .logotipo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .logotipo span {
+            color: var(--cor-primaria);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--cor-primaria);
+        }
+
+        .botao-menu {
+            background-color: var(--cor-primaria);
+            padding: 8px 15px;
+            border-radius: 5px;
+            color: black !important;
+            font-weight: bold;
+        }
+
+        /* ÁREA DO CHAT */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 20px auto;
+            width: 95%;
+            background: var(--cor-card);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .chat-header {
+            background: #1a1a1a;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .chat-header h2 {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chat-header span {
+            color: var(--cor-primaria);
+        }
+
+        #chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* BALÕES DE MENSAGEM */
+        .mensagem {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 15px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: var(--cor-primaria);
+            color: black;
+            font-weight: 500;
+            border-bottom-right-radius: 2px;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: #252525;
+            color: white;
+            border-bottom-left-radius: 2px;
+            border: 1px solid #444;
+        }
+
+        /* CAMPO DE ENTRADA */
+        .chat-input-area {
+            padding: 20px;
+            background: #1a1a1a;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: #000;
+            border: 1px solid #444;
+            padding: 12px 15px;
+            color: white;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--cor-primaria);
+        }
+
+        button#btn-enviar {
+            background: var(--cor-primaria);
+            color: black;
+            border: none;
+            padding: 0 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button#btn-enviar:hover {
+            background: #ff6a2a;
+            transform: scale(1.05);
+        }
+
+        /* RODAPÉ */
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: var(--cor-suave);
+            background: black;
+        }
+
+        /* SCROLLBAR PERSONALIZADA */
+        #chat-messages::-webkit-scrollbar { width: 6px; }
+        #chat-messages::-webkit-scrollbar-thumb { background: var(--cor-primaria); border-radius: 10px; }
+    </style>
 </head>
+<body>
+
+    <header class="barra-navegacao">
+        <div class="logotipo">NEXUS<span>LEGACY</span></div>
+        <nav>
+            <ul>
+                <li><a href="/">Início</a></li>
+                <li><a href="#" style="color: var(--cor-primaria);">MyCoach</a></li>
+                <li><a href="#">Treinos</a></li>
+                <li><a href="#" class="botao-menu">Matricule-se</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="chat-container">
+        <div class="chat-header">
+            <h2>MyCoach <span>Legacy</span> IA</h2>
+            <p style="font-size: 12px; color: #888;">Forge seu shape com inteligência</p>
+        </div>
+
+        <div id="chat-messages">
+            <div class="mensagem bot-message">
+                Bem-vindo à Nexus Legacy. Eu sou seu MyCoach. Como posso ajudar no seu treinamento hoje?
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Pergunte sobre treinos, dieta ou mentalidade...">
+            <button id="btn-enviar">FORJAR</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Nexus Legacy Gym - Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const input = document.getElementById('user-input');
+        const btn = document.getElementById('btn-enviar');
+        const chatMessages = document.getElementById('chat-messages');
+
+        async function enviarMensagem() {
+            const mensagem = input.value.trim();
+            if (!mensagem) return;
+
+            // Adicionar mensagem do usuário na tela
+            adicionarMensagem(mensagem, 'user-message');
+            input.value = '';
+
+            try {
+                const response = await fetch('/perguntar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensagem: mensagem })
+                });
+
+                const dados = await response.json();
+                adicionarMensagem(dados.resposta, 'bot-message');
+            } catch (error) {
+                adicionarMensagem("Erro ao conectar com a NexusIA.", 'bot-message');
+            }
+        }
+
+        function adicionarMensagem(texto, classe) {
+            const div = document.createElement('div');
+            div.className = `mensagem ${classe}`;
+            div.innerText = texto;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        btn.addEventListener('click', enviarMensagem);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') enviarMensagem();
+        });
+    </script>
+</body>
+</html>
