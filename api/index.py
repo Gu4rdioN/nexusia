@@ -33,12 +33,13 @@ def perguntar():
             base_url="https://openrouter.ai/api/v1",
             api_key=chave
         )
-        
+
+                
         dados = request.get_json()
         pergunta = dados.get('mensagem')
 
         response = client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free", 
+            model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", 
             messages=[
                 {"role": "system", "content": IDENTIDADE_HYDRALYNX},
                 {"role": "user", "content": pergunta}
