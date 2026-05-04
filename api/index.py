@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, jsonify  
 from openai import OpenAI 
 import os
+from flask_cors import CORS
 
 app = Flask(__name__, 
             template_folder='../templates', 
             static_folder='../static')
+
+CORS(app, resources={r"/perguntar": {"origins": "https://nexuslegacy-qw5pi8uhd-kiransilveira-lgtms-projects.vercel.app/"}})
 
 if not os.path.exists(os.path.join(os.path.dirname(__file__), '../templates')):
     app.template_folder = os.path.join(os.getcwd(), 'templates')
